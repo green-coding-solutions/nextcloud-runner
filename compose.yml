@@ -4,8 +4,8 @@ services:
       context: .
       args:
         NEXTCLOUD_REPO: https://github.com/nextcloud/server.git
-        GIT_REF: 13210bc
-    image: my-nextcloud:stable28
+        GIT_REF: master
+    image: my-nextcloud:master
     container_name: nextcloud-app
     restart: unless-stopped
     shm_size: "256m"
@@ -26,7 +26,7 @@ services:
       - "8080:80" # access at http://localhost:8080
 
   cron:
-    image: my-nextcloud:stable28
+    image: my-nextcloud:master
     container_name: nextcloud-cron
     restart: unless-stopped
     depends_on:

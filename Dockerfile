@@ -3,7 +3,7 @@ FROM php:8.2-apache
 
 # ---- Build args to select repo + commit ----
 ARG NEXTCLOUD_REPO=https://github.com/nextcloud/server.git
-ARG GIT_REF=13210bc   # e.g. a commit hash, tag, or branch (override at build time)
+ARG GIT_REF=master
 
 # ---- System deps for PHP extensions & tools ----
 RUN apt-get update && apt-get install -y --no-install-recommends \
