@@ -2,11 +2,10 @@ services:
   app:
     build:
       context: .
-      args:
-        NEXTCLOUD_REPO: https://github.com/nextcloud/server.git
-        GIT_REF: stable32
+      # args:
+      #   - NEXTCLOUD_REPO: https://github.com/nextcloud/server.git
+      #   - GIT_REF: stable32
     image: my-nextcloud:master
-    container_name: nextcloud-app
     restart: unless-stopped
     shm_size: "256m"
     depends_on:
@@ -58,12 +57,11 @@ services:
       - .:/tmp/repo
     environment:
        DISPLAY: ":0" # for debugging in non-headless mode
-    tty: true              # nice to have for interactive shells
-    stdin_open: true       # "
+    #tty: true              # nice to have for interactive shells
+    #stdin_open: true       # "
     command: [ "tail", "-f", "/dev/null" ]   # keep container running
   db:
     image: mariadb:10.11
-    container_name: nextcloud-db
     restart: unless-stopped
     environment:
       MARIADB_AUTO_UPGRADE: "1"
@@ -72,8 +70,8 @@ services:
       MYSQL_USER: nextcloud
       MYSQL_PASSWORD: nextcloud
     command: ["--transaction-isolation=READ-COMMITTED", "--binlog-format=ROW", "--innodb-read-only-compressed=OFF"]
-    volumes:
-      - db_data:/var/lib/mysql
+    # volumes:
+    #   - db_data:/var/lib/mysql
 
   # redis:
   #   image: redis:7-alpine
@@ -83,10 +81,10 @@ services:
   #   volumes:
   #     - redis_data:/data
 
-volumes:
-  nextcloud_data:
-  nextcloud_config:
-  nextcloud_apps:
-  nextcloud_theme:
-  db_data:
-  redis_data:
+# volumes:
+#   nextcloud_data:
+#   nextcloud_config:
+#   nextcloud_apps:
+#   nextcloud_theme:
+#   db_data:
+#   redis_data:

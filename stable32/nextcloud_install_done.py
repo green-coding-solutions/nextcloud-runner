@@ -32,6 +32,7 @@ def main(browser_name: str = "firefox", headless=False):
             page.locator('input[name="adminlogin"]').fill('nextcloud')
             page.locator('input[name="adminpass"]').fill('nextcloud')
 
+            page.get_by_text("Storage & database").click()
             page.get_by_text("MySQL/MariaDB", exact=True).click()
 
             page.wait_for_selector('input[name="dbuser"]')

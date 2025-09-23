@@ -45,22 +45,26 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
  && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
  && rm composer-setup.php
 
+#COPY nextcloud/ ./
+RUN git clone --single-branch --depth=1 --branch "$GIT_REF" --recurse-submodules "$NEXTCLOUD_REPO" /usr/src/nextcloud
+
 WORKDIR /usr/src/nextcloud
-COPY nextcloud/ ./
+
 
 RUN if [ -d .git ]; then \
       git remote set-url origin "$NEXTCLOUD_REPO" || true; \
     fi
 
-RUN if [ -d .git ]; then \
-      git fetch --all --tags; \
-      git checkout "$GIT_REF"; \
-      git submodule update --init --recursive; \
-    else \
-      echo "WARNING: ./nextcloud has no .git; skipping fetch/checkout/submodules"; \
-    fi
+# RUN if [ -d .git ]; then \
+#       git fetch --all --tags; \
+#       git checkout "$GIT_REF"; \
+#       git submodule update --init --recursive; \
+#     else \
+#       echo "WARNING: ./nextcloud has no .git; skipping fetch/checkout/submodules"; \
+#     fi
 
-RUN if [ -f composer.json ]; then composer install --no-dev -o || true; fi
+ENV COMPOSER_ALLOW_SUPERUSER=1
+RUN if [ -f composer.json ]; then composer install --no-dev -o --no-interaction --no-ansi || true; fi
 
 
 WORKDIR /var/www/html

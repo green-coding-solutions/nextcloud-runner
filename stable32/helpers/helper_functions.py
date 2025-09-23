@@ -31,6 +31,6 @@ def close_modal(page) -> None:
 def timeout_handler(signum, frame):
     raise TimeoutError("Page.content() timed out")
 
-def user_sleep(delay=0):
+def user_sleep(delay=5):
     log_note(f"Sleeping for {delay}s")
     sleep(delay)
