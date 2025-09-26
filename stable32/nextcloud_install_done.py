@@ -49,7 +49,7 @@ def main(browser_name: str = "firefox", headless=False):
 #            page.get_by_text("Skip").click()
 
             # 3. Dashboard
-            page.locator('.app-dashboard').wait_for(state='visible')
+            page.locator('.app-dashboard').wait_for(state='visible', timeout=240_000)
             log_note("Installation complete")
             browser.close()
 
