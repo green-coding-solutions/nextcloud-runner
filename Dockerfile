@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-ARG GIT_REF=8c81f9e0faf0de4adfa43115be51f0316a81eeb2
+ARG GIT_REF=e451742efc1261cadb6086150cee2c1d0a051988
 ARG NEXTCLOUD_REPO=https://github.com/nextcloud/server.git
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
