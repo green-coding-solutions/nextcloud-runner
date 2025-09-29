@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-ARG GIT_REF=a9daf61
+ARG GIT_REF=8c81f9e0faf0de4adfa43115be51f0316a81eeb2
 ARG NEXTCLOUD_REPO=https://github.com/nextcloud/server.git
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -46,14 +46,20 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
  && rm composer-setup.php
 
 #COPY nextcloud/ ./
-RUN git clone --single-branch --depth=1 --branch "$GIT_REF" --recurse-submodules "$NEXTCLOUD_REPO" /usr/src/nextcloud
+RUN mkdir -p /usr/src/nextcloud \
+ && git init /usr/src/nextcloud \
+ && cd /usr/src/nextcloud \
+ && git remote add origin "$NEXTCLOUD_REPO" \
+ && git -c protocol.version=2 fetch --depth=1 --no-tags origin "$GIT_REF" \
+ && git checkout --detach -q FETCH_HEAD \
+ && git submodule update --init --recursive --depth=1 --recommend-shallow
 
 WORKDIR /usr/src/nextcloud
 
 
-RUN if [ -d .git ]; then \
-      git remote set-url origin "$NEXTCLOUD_REPO" || true; \
-    fi
+# RUN if [ -d .git ]; then \
+#       git remote set-url origin "$NEXTCLOUD_REPO" || true; \
+#     fi
 
 # RUN if [ -d .git ]; then \
 #       git fetch --all --tags; \
