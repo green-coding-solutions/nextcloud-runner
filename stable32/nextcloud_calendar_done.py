@@ -33,7 +33,7 @@ def run(playwright: Playwright, browser_name: str) -> None:
         close_modal(page)
 
         log_note("Going to calendar")
-        page.get_by_role("link", name="Calendar", exact=True).click()
+        page.get_by_role("link", name="Calendar").click()
         user_sleep()
 
         #CREATE
