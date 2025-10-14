@@ -5,7 +5,7 @@ from time import time_ns
 from dotenv import load_dotenv
 from playwright.sync_api import sync_playwright
 
-from helpers.helper_functions import log_note, timeout_handler
+from helpers.helper_functions import log_note, timeout_handler, user_sleep
 
 load_dotenv()
 
@@ -32,8 +32,10 @@ def main(browser_name: str = "firefox", headless=False):
             page.locator('input[name="adminlogin"]').fill('nextcloud')
             page.locator('input[name="adminpass"]').fill('nextcloud')
 
-            page.get_by_text("Storage & database").click()
-            page.get_by_text("MySQL/MariaDB", exact=True).click()
+            #user_sleep(3)
+
+            #page.get_by_text("Storage & database").click()
+            page.get_by_text("MySQL/MariaDB").click()
 
             page.wait_for_selector('input[name="dbuser"]')
             page.locator('input[name="dbuser"]').fill('nextcloud')
@@ -43,10 +45,10 @@ def main(browser_name: str = "firefox", headless=False):
             page.get_by_role("button", name="Install").click()
 
             # 2. Install all Apps
-            log_note("Install recommended apps")
-            install_selector = '.button-vue--vue-primary'
-            page.locator(install_selector).click()
-#            page.get_by_text("Skip").click()
+            # log_note("Install recommended apps")
+            # install_selector = '.button-vue--vue-primary'
+            # page.locator(install_selector).click()
+            page.get_by_text("Skip").click()
 
             # 3. Dashboard
             page.locator('.app-dashboard').wait_for(state='visible', timeout=240_000)

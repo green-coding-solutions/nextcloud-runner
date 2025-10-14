@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-ARG GIT_REF=stable31
+ARG GIT_REF=stable32
 ARG NEXTCLOUD_REPO=https://github.com/nextcloud/server.git
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libzip-dev libxml2-dev libicu-dev libgmp-dev \
     libbz2-dev libexif-dev libwebp-dev \
     libmagickwand-dev util-linux sudo \
+    ca-certificates curl \
     && rm -rf /var/lib/apt/lists/*
 
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
@@ -46,7 +47,22 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
  && rm composer-setup.php
 
 #COPY nextcloud/ ./
-RUN git clone --single-branch --depth=1 --branch "$GIT_REF" --recurse-submodules "$NEXTCLOUD_REPO" /usr/src/nextcloud
+#RUN git clone --single-branch --depth=1 --branch "$GIT_REF" --recurse-submodules "$NEXTCLOUD_REPO" /usr/src/nextcloud
+RUN set -eux; \
+    git init /usr/src/nextcloud; \
+    cd /usr/src/nextcloud; \
+    git remote add origin "$NEXTCLOUD_REPO"; \
+    if echo "$GIT_REF" | grep -Eq '^[0-9a-f]{7,40}$'; then \
+      # GIT_REF looks like a commit SHA
+      git fetch --depth=1 origin "$GIT_REF"; \
+      git checkout --detach FETCH_HEAD; \
+    else \
+      # GIT_REF is a branch or tag
+      git fetch --depth=1 --tags origin "$GIT_REF"; \
+      git checkout -q "$GIT_REF"; \
+    fi; \
+    # bring in submodules shallowly
+    git submodule update --init --recursive --depth=1
 
 WORKDIR /usr/src/nextcloud
 
