@@ -11,7 +11,7 @@ services:
       - db
       # - redis
     environment:
-      REDIS_HOST: redis
+      # REDIS_HOST: redis
       PHP_MEMORY_LIMIT: 512M
       HOST_URL: http://app
 
@@ -22,8 +22,8 @@ services:
       # - nextcloud_config:/var/www/html/config
       # - nextcloud_apps:/var/www/html/custom_apps
       # - nextcloud_theme:/var/www/html/themes
-    ports:
-      - "8080:80" # access at http://localhost:8080
+    #ports:
+      # - "8080:80" # access at http://localhost:8080
       #- "8443:443"
 
   # cron:
@@ -53,7 +53,7 @@ services:
     image: greencoding/gcb_playwright:v21
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix # for debugging in non-headless mode
-      - .:/tmp/repo
+      # - .:/tmp/repo
     environment:
        DISPLAY: ":0" # for debugging in non-headless mode
     #tty: true              # nice to have for interactive shells
