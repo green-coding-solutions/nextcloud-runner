@@ -1,0 +1,142 @@
+---
+name: Nextcloud - MariaDB - Install - Firefox
+author: Arne Tarara <arne@green-coding.io> + Didi Hoffmann <didi@green-coding.io>
+description: Installieren des offiziellen Nextcloud Docker containers mit MariaDB Datenbank. Dann booten und 1 Std. Idle.
+compose-file: !include compose.yml
+
+services:
+  gcb-playwright:
+    image: greencoding/gcb_playwright:v14
+#    depends_on:
+#      nc:
+#        condition: service_healthy
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix # for debugging in non-headless mode
+    environment:
+       DISPLAY: ":0" # for debugging in non-headless mode
+    setup-commands:
+      - command: pip install dotenv
+
+
+flow:
+  - name: Install Nextcloud
+    container: gcb-playwright
+    commands:
+      - type: console
+        command: python3 /tmp/repo/stable31/nextcloud_install_done.py firefox
+
+  # - name: Install Apps
+  #   container: app
+  #   commands:
+      # - type: console
+      #   command: |
+      #     sudo -u www-data git clone --depth 1 https://github.com/nextcloud/text.git /var/www/html/apps/text/ \
+      #     && cd /var/www/html/apps/text/ \
+      #     && sudo -u www-data git fetch --depth 1 origin __GMT_VAR_NCTEXT__ \
+      #     && sudo -u www-data git checkout __GMT_VAR_NCTEXT__ \
+      #     && sudo -u www-data composer install --no-dev \
+      #     && sudo -u www-data php /var/www/html/occ app:enable text
+      #   shell: bash
+
+      # - type: console
+      #   command: |
+      #     sudo -u www-data git clone --depth 1 https://github.com/nextcloud/calendar.git /var/www/html/apps/calendar/ \
+      #     && cd /var/www/html/apps/calendar/ \
+      #     && sudo -u www-data git fetch --depth 1 origin __GMT_VAR_NCCAL__ \
+      #     && sudo -u www-data git checkout __GMT_VAR_NCCAL__ \
+      #     && sudo -u www-data composer install --no-dev \
+      #     && sudo -u www-data php /var/www/html/occ app:enable calendar
+      #   shell: bash
+      #   ignore-errors: true
+
+      # - type: console
+      #   command: |
+      #     sudo -u www-data git clone --depth 1 https://github.com/nextcloud/contacts.git /var/www/html/apps/contacts/ \
+      #     && cd /var/www/html/apps/contacts/ \
+      #     && sudo -u www-data git fetch --depth 1 origin __GMT_VAR_NCCONTACT__ \
+      #     && sudo -u www-data git checkout __GMT_VAR_NCCONTACT__ \
+      #     && sudo -u www-data composer install --no-dev \
+      #     && sudo -u www-data php /var/www/html/occ app:enable contacts
+      #   shell: bash
+      # - type: console
+      #   command: |
+      #     sudo -u www-data git clone --depth 1 https://github.com/nextcloud/spreed.git /var/www/html/apps/spreed/ \
+      #     && cd /var/www/html/apps/spreed/ \
+      #     && sudo -u www-data git fetch --depth 1 origin __GMT_VAR_NCSPREED__ \
+      #     && sudo -u www-data git checkout __GMT_VAR_NCSPREED__ \
+      #     && sudo -u www-data composer install --no-dev \
+      #     && sudo -u www-data php /var/www/html/occ app:enable spreed
+      #   shell: bash
+
+  - name: Install Apps
+    container: app
+    commands:
+      - type: console
+        command: |
+          sudo -u www-data git clone -b stable31 --single-branch --depth 1 https://github.com/nextcloud/text.git /var/www/html/apps/text/ \
+          && cd /var/www/html/apps/text/ \
+          && sudo -u www-data php /var/www/html/occ app:enable text
+        shell: bash
+
+      - type: console
+        command: sudo -u www-data php /var/www/html/occ app:install calendar && sudo -u www-data php /var/www/html/occ app:enable calendar
+        shell: bash
+
+      - type: console
+        command: sudo -u www-data php /var/www/html/occ app:install contacts && sudo -u www-data php /var/www/html/occ app:enable contacts
+        shell: bash
+
+      - type: console
+        command: sudo -u www-data php /var/www/html/occ app:install spreed && sudo -u www-data php /var/www/html/occ app:enable spreed
+        shell: bash
+
+
+  - name: Calendar
+    container: gcb-playwright
+    commands:
+      - type: console
+        command: python3 /tmp/repo/stable31/nextcloud_calendar_done.py firefox
+        note: Creating event
+
+  - name: Contacts
+    container: gcb-playwright
+    commands:
+      - type: console
+        command: python3 /tmp/repo/stable31/nextcloud_contacts_done.py firefox
+        note: Creating event
+
+  - name: Create User
+    container: gcb-playwright
+    commands:
+      - type: console
+        command: python3 /tmp/repo/stable31/nextcloud_docs_create_user_done.py firefox
+        note: Creating event
+
+  # - name: Docs create and share
+  #   container: gcb-playwright
+  #   commands:
+  #     - type: console
+  #       command: python3 /tmp/repo/stable31/nextcloud_docs_create_doc_and_share_fail.py firefox
+  #       note: Creating event
+
+  # - name: Collaborative Editing
+  #   container: gcb-playwright
+  #   commands:
+  #     - type: console
+  #       command: python3 /tmp/repo/stable31/nextcloud_docs_collaboration_fail.py firefox
+  #       note: Creating event
+
+
+  - name: Files
+    container: gcb-playwright
+    commands:
+      - type: console
+        command: python3 /tmp/repo/stable31/nextcloud_files_done.py firefox
+        note: Creating event
+
+  - name: Talk
+    container: gcb-playwright
+    commands:
+      - type: console
+        command: python3 /tmp/repo/stable31/nextcloud_talk_done.py firefox
+        note: Creating event
