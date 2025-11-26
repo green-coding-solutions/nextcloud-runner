@@ -1,16 +1,16 @@
 # Nextcloud Docker
 
-This repository provides a way to build a Docker image for any version of Nextcloud.
+This repository benchmarks Nextcloud with the Green Metrics Tool.
 
-You can also use the Green Metrics Tool to benchmark Nextcloud
+There are 3 usage scenario files.
+```
+usage_scenario_31.yml => which will benchmark the 31 branch with the latest apps for this release
+usage_scenario_32.yml => which will benchmark the 32 branch with the latest apps for this release
+usage_scenario_master.yml => this will benchmark the master branch of nextcloud server and all the apps
+```
 
-# Setup
+It also provides a way to build a Docker image for any version of Nextcloud which you can see in the `Dockerfile`
 
-As the nextcloud install is quite larege we don't ship with this. So you will need to
-
-git clone https://github.com/nextcloud/server.git nextcloud
-
-before building the containers
 
 ## Building a specific version
 

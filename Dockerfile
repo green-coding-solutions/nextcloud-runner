@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-ARG GIT_REF=stable32
+ARG GIT_REF=master
 ARG NEXTCLOUD_REPO=https://github.com/nextcloud/server.git
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libzip-dev libxml2-dev libicu-dev libgmp-dev \
     libbz2-dev libexif-dev libwebp-dev \
     libmagickwand-dev util-linux sudo \
-    ca-certificates curl \
+    ca-certificates curl nodejs npm \
     && rm -rf /var/lib/apt/lists/*
 
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
@@ -33,6 +33,9 @@ RUN pecl install redis apcu && docker-php-ext-enable redis apcu
 RUN pecl install imagick && docker-php-ext-enable imagick || true
 
 RUN a2enmod rewrite headers env dir mime setenvif
+
+RUN sudo mkdir /var/www/.npm && sudo chown -R www-data:www-data /var/www/.npm
+RUN sudo mkdir mkdir /var/www/.cache && sudo chown -R www-data:www-data /var/www/.cache
 
 RUN { \
   echo "memory_limit=512M"; \

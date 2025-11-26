@@ -1,7 +1,7 @@
 ---
 name: Nextcloud - MariaDB - Install - Firefox
 author: Arne Tarara <arne@green-coding.io> + Didi Hoffmann <didi@green-coding.io>
-description: Installieren des offiziellen Nextcloud Docker containers mit MariaDB Datenbank. Dann booten und 1 Std. Idle.
+description: Installieren des offiziellen Nextcloud Docker containers mit MariaDB Datenbank.
 compose-file: !include compose.yml
 
 services:

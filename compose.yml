@@ -22,8 +22,8 @@ services:
       # - nextcloud_config:/var/www/html/config
       # - nextcloud_apps:/var/www/html/custom_apps
       # - nextcloud_theme:/var/www/html/themes
-    #ports:
-      # - "8080:80" # access at http://localhost:8080
+    # ports:
+    #   - "8080:80" # access at http://localhost:8080
       #- "8443:443"
 
   # cron:

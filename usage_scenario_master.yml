@@ -1,0 +1,166 @@
+---
+name: Nextcloud - MariaDB - Install - Firefox
+author: Arne Tarara <arne@green-coding.io> + Didi Hoffmann <didi@green-coding.io>
+description: Installieren des offiziellen Nextcloud Docker containers mit MariaDB Datenbank.
+compose-file: !include compose.yml
+
+services:
+  gcb-playwright:
+    image: greencoding/gcb_playwright:v14
+#    depends_on:
+#      nc:
+#        condition: service_healthy
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix # for debugging in non-headless mode
+    environment:
+       DISPLAY: ":0" # for debugging in non-headless mode
+    setup-commands:
+      - command: pip install dotenv
+
+
+flow:
+  - name: Install Nextcloud
+    container: gcb-playwright
+    commands:
+      - type: console
+        command: python3 /tmp/repo/master/nextcloud_install_done.py firefox
+
+  - name: Install Apps
+    container: app
+    commands:
+      - type: console
+        command: |
+          sudo -u www-data git clone -b master --single-branch --depth 1 https://github.com/nextcloud/viewer.git /var/www/html/apps/viewer/ \
+          && cd /var/www/html/apps/viewer/ \
+          && sudo -u www-data npm ci \
+          && sudo -u www-data npm run build \
+          && sudo -u www-data php /var/www/html/occ app:enable viewer
+        shell: bash
+
+      - type: console
+        command: |
+          sudo -u www-data git clone -b main --single-branch --depth 1 https://github.com/nextcloud/text.git /var/www/html/apps/text/ \
+          && cd /var/www/html/apps/text/ \
+          && sudo -u www-data composer install --no-dev \
+          && sudo -u www-data make \
+          && sudo -u www-data php /var/www/html/occ app:enable text
+        shell: bash
+
+      - type: console
+        command: |
+          sudo -u www-data git clone --depth 1 https://github.com/nextcloud/calendar.git /var/www/html/apps/calendar/ \
+          && cd /var/www/html/apps/calendar/ \
+          && sudo -u www-data composer install --no-dev \
+          && sudo -u www-data npm ci \
+          && sudo -u www-data npm run build \
+          && sudo -u www-data php /var/www/html/occ app:enable calendar
+        shell: bash
+
+      - type: console
+        command: |
+          sudo -u www-data git clone --depth 1 https://github.com/nextcloud/contacts.git /var/www/html/apps/contacts/ \
+          && cd /var/www/html/apps/contacts/ \
+          && sudo -u www-data composer install --no-dev \
+          && sudo -u www-data npm ci \
+          && sudo -u www-data npm run build \
+          && sudo -u www-data php /var/www/html/occ app:enable contacts
+        shell: bash
+
+      - type: console
+        command: |
+          sudo -u www-data git clone --depth 1 https://github.com/nextcloud/spreed.git /var/www/html/apps/spreed/ \
+          && cd /var/www/html/apps/spreed/ \
+          && sudo -u www-data composer install --no-dev \
+          && sudo -u www-data npm ci \
+          && sudo -u www-data make build-js-production \
+          && sudo -u www-data php /var/www/html/occ app:enable spreed
+        shell: bash
+
+
+  - name: Calendar
+    container: gcb-playwright
+    commands:
+      - type: console
+        command: python3 /tmp/repo/master/nextcloud_calendar.py firefox
+        note: Creating event
+        read-notes-stdout: true
+        read-sci-stdout: true
+        log-stdout: true
+        log-stderr: true
+
+  - name: Contacts
+    container: gcb-playwright
+    commands:
+      - type: console
+        command: python3 /tmp/repo/master/nextcloud_contacts.py firefox
+        note: Creating event
+        read-notes-stdout: true
+        read-sci-stdout: true
+        log-stdout: true
+        log-stderr: true
+
+  - name: Create User
+    container: gcb-playwright
+    commands:
+      - type: console
+        command: python3 /tmp/repo/master/nextcloud_docs_create_user.py firefox
+        note: Creating event
+        read-notes-stdout: true
+        read-sci-stdout: true
+        log-stdout: true
+        log-stderr: true
+
+  - name: Docs create and share
+    container: gcb-playwright
+    commands:
+      - type: console
+        command: python3 /tmp/repo/master/nextcloud_docs_create_doc_and_share.py firefox
+        note: Creating event
+        read-notes-stdout: true
+        read-sci-stdout: true
+        log-stdout: true
+        log-stderr: true
+
+  - name: Collaborative Editing
+    container: gcb-playwright
+    commands:
+      - type: console
+        command: python3 /tmp/repo/master/nextcloud_docs_collaboration.py firefox
+        note: Creating event
+        read-notes-stdout: true
+        read-sci-stdout: true
+        log-stdout: true
+        log-stderr: true
+
+  - name: Files
+    container: gcb-playwright
+    commands:
+      - type: console
+        command: python3 /tmp/repo/master/nextcloud_files.py firefox
+        note: Creating event
+        read-notes-stdout: true
+        read-sci-stdout: true
+        log-stdout: true
+        log-stderr: true
+
+  - name: Collaborative Editing
+    container: gcb-playwright
+    commands:
+      - type: console
+        command: python3 /tmp/repo/master/nextcloud_docs_delete_user_and_file.py firefox
+        note: Creating event
+        read-notes-stdout: true
+        read-sci-stdout: true
+        log-stdout: true
+        log-stderr: true
+
+  - name: Talk
+    container: gcb-playwright
+    commands:
+      - type: console
+        command: python3 /tmp/repo/master/nextcloud_talk.py firefox
+        note: Creating event
+        read-notes-stdout: true
+        read-sci-stdout: true
+        log-stdout: true
+        log-stderr: true
