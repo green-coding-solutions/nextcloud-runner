@@ -53,7 +53,7 @@ def run(playwright: Playwright, browser_name: str) -> None:
         # EDIT
         log_note("Modify event - Clicking edit form")
         page.get_by_text(event_name, exact=True).click()
-        popover_locator = page.locator('div.event-popover[aria-hidden="false"]')
+        popover_locator = page.locator('div.event-popover')
         expect(popover_locator).to_be_visible()
         edit_button = popover_locator.locator('button:has-text("Edit")')
         edit_button.click()

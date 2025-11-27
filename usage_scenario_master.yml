@@ -23,7 +23,7 @@ flow:
     container: gcb-playwright
     commands:
       - type: console
-        command: python3 /tmp/repo/master/nextcloud_install_done.py firefox
+        command: python3 /tmp/repo/master/nextcloud_install.py firefox
 
   - name: Install Apps
     container: app
@@ -143,7 +143,7 @@ flow:
         log-stdout: true
         log-stderr: true
 
-  - name: Collaborative Editing
+  - name: Delete User
     container: gcb-playwright
     commands:
       - type: console

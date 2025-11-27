@@ -90,11 +90,18 @@ def collaborate(playwright: Playwright, browser_name: str) -> None:
         admin_text_box.wait_for(state="visible")
         user_text_box.wait_for(state="visible")
 
+        log_note("Admin validation message")
         admin_user_page.keyboard.type(first_message, delay=TYPING_DELAY_MS)
         user_sleep()
-
         log_note('Checking if message is visible')
         expect(docs_user_page.get_by_text(first_message)).to_be_visible()
+
+        log_note("User validation message")
+        docs_user_page.keyboard.type(first_message + '2', delay=TYPING_DELAY_MS)
+        user_sleep()
+        expect(admin_user_page.get_by_text(first_message+ '2')).to_be_visible(timeout=15_000)
+
+
 
         for x in range(1, 7):
             random_message = get_random_text(50)
