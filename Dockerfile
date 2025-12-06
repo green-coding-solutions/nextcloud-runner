@@ -1,7 +1,8 @@
-FROM php:8.2-apache
+FROM php:8.4-apache-trixie
 
 ARG GIT_REF=master
 ARG NEXTCLOUD_REPO=https://github.com/nextcloud/server.git
+ARG NODE_VERSION=25.2.1
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git unzip rsync nano less \
@@ -9,8 +10,22 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libzip-dev libxml2-dev libicu-dev libgmp-dev \
     libbz2-dev libexif-dev libwebp-dev \
     libmagickwand-dev util-linux sudo \
-    ca-certificates curl nodejs npm \
+    ca-certificates curl \
     && rm -rf /var/lib/apt/lists/*
+
+
+RUN set -eux; \
+    arch="$(dpkg --print-architecture)"; \
+    case "$arch" in \
+      amd64) node_arch='x64' ;; \
+      arm64) node_arch='arm64' ;; \
+      armhf) node_arch='armv7l' ;; \
+      *) echo "Unsupported architecture: $arch"; exit 1 ;; \
+    esac; \
+    curl -fsSLO "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-${node_arch}.tar.xz"; \
+    tar -xJf "node-v${NODE_VERSION}-linux-${node_arch}.tar.xz" -C /usr/local --strip-components=1 --no-same-owner; \
+    rm "node-v${NODE_VERSION}-linux-${node_arch}.tar.xz"; \
+    ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
  && docker-php-ext-install -j"$(nproc)" \
@@ -34,8 +49,8 @@ RUN pecl install imagick && docker-php-ext-enable imagick || true
 
 RUN a2enmod rewrite headers env dir mime setenvif
 
-RUN sudo mkdir /var/www/.npm && sudo chown -R www-data:www-data /var/www/.npm
-RUN sudo mkdir mkdir /var/www/.cache && sudo chown -R www-data:www-data /var/www/.cache
+RUN mkdir /var/www/.npm && sudo chown -R www-data:www-data /var/www/.npm
+RUN mkdir mkdir /var/www/.cache && sudo chown -R www-data:www-data /var/www/.cache
 
 RUN { \
   echo "memory_limit=512M"; \
