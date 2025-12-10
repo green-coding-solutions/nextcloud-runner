@@ -1,6 +1,6 @@
 FROM php:8.4-apache-trixie
-
-ARG GIT_REF=master
+# A random commit so we fail if none is provided
+ARG GIT_REF=bf2fa169252094d05d473f8d777c49d2a69bab3f
 ARG NEXTCLOUD_REPO=https://github.com/nextcloud/server.git
 ARG NODE_VERSION=25.2.1
 

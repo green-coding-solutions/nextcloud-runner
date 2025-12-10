@@ -2,8 +2,8 @@ services:
   app:
     build:
       context: .
-      # args:
-      #   - GIT_REF: __GMT_VAR_NCHASH__
+      args:
+        - GIT_REF: __GMT_VAR_NCHASH__
     image: my-nextcloud:master
     restart: unless-stopped
     shm_size: "256m"

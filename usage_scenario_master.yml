@@ -19,57 +19,79 @@ services:
 
 
 flow:
-  - name: Install Nextcloud
+  - name: Install Nextcloud __GMT_VAR_NCHASH__
     container: gcb-playwright
     commands:
       - type: console
         command: python3 /tmp/repo/master/nextcloud_install.py firefox
 
-  - name: Install Apps
+  - name: Install Viewer __GMT_VAR_NCVIEWER__
     container: app
     commands:
       - type: console
         command: |
           sudo -u www-data git clone -b master --single-branch --depth 1 https://github.com/nextcloud/viewer.git /var/www/html/apps/viewer/ \
           && cd /var/www/html/apps/viewer/ \
+          && sudo -u www-data git fetch --depth 1 origin __GMT_VAR_NCVIEWER__ \
+          && sudo -u www-data git checkout __GMT_VAR_NCVIEWER__ \
           && sudo -u www-data npm ci \
           && sudo -u www-data npm run build \
           && sudo -u www-data php /var/www/html/occ app:enable viewer
         shell: bash
 
+  - name: Install Text __GMT_VAR_NCTEXT__
+    container: app
+    commands:
       - type: console
         command: |
           sudo -u www-data git clone -b main --single-branch --depth 1 https://github.com/nextcloud/text.git /var/www/html/apps/text/ \
           && cd /var/www/html/apps/text/ \
+          && sudo -u www-data git fetch --depth 1 origin __GMT_VAR_NCTEXT__ \
+          && sudo -u www-data git checkout __GMT_VAR_NCTEXT__ \
           && sudo -u www-data composer install --no-dev \
           && sudo -u www-data make \
           && sudo -u www-data php /var/www/html/occ app:enable text
         shell: bash
 
+  - name: Install Cal __GMT_VAR_NCCAL__
+    container: app
+    commands:
       - type: console
         command: |
-          sudo -u www-data git clone --depth 1 https://github.com/nextcloud/calendar.git /var/www/html/apps/calendar/ \
+          sudo -u www-data git clone -b main --depth 1 https://github.com/nextcloud/calendar.git /var/www/html/apps/calendar/ \
           && cd /var/www/html/apps/calendar/ \
+          && sudo -u www-data git fetch --depth 1 origin __GMT_VAR_NCCAL__ \
+          && sudo -u www-data git checkout __GMT_VAR_NCCAL__ \
           && sudo -u www-data composer install --no-dev \
           && sudo -u www-data npm ci \
           && sudo -u www-data npm run build \
           && sudo -u www-data php /var/www/html/occ app:enable calendar
         shell: bash
 
+  - name: Install Contacts __GMT_VAR_NCCONTACT__
+    container: app
+    commands:
       - type: console
         command: |
           sudo -u www-data git clone --depth 1 https://github.com/nextcloud/contacts.git /var/www/html/apps/contacts/ \
           && cd /var/www/html/apps/contacts/ \
+          && sudo -u www-data git fetch --depth 1 origin __GMT_VAR_NCCONTACT__ \
+          && sudo -u www-data git checkout __GMT_VAR_NCCONTACT__ \
           && sudo -u www-data composer install --no-dev \
           && sudo -u www-data npm ci \
           && sudo -u www-data npm run build \
           && sudo -u www-data php /var/www/html/occ app:enable contacts
         shell: bash
 
+  - name: Install Spreed __GMT_VAR_NCSPREED__
+    container: app
+    commands:
       - type: console
         command: |
           sudo -u www-data git clone --depth 1 https://github.com/nextcloud/spreed.git /var/www/html/apps/spreed/ \
           && cd /var/www/html/apps/spreed/ \
+          && sudo -u www-data git fetch --depth 1 origin __GMT_VAR_NCSPREED__ \
+          && sudo -u www-data git checkout __GMT_VAR_NCSPREED__ \
           && sudo -u www-data composer install --no-dev \
           && sudo -u www-data npm ci \
           && sudo -u www-data make build-js-production \
